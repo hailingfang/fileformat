@@ -10,12 +10,12 @@ Biology
 ---------------------
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
     :numbered: 1
 
     plink-bed-file
     gcta-besd-file
-    bod_file
+    bod-file
     bgen-file
     sam-bam-file
     fasta-file
