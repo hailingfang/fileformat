@@ -1,33 +1,72 @@
-# BOD file  
+BOD file  
+==================
 
-## .oii file
-Columns are:
+Oii file
+------------------
 
-`"family ID" "individual ID" "paternal ID" "maternal ID" "sex"`.
+Stored individual information.
 
- `sex`: 1 for male; 2 for female; 0 for unknown.
+.. code::
 
-Missing data are represented by "NA".  
+    def filetype plaintext;
+    def encode ascii;
+    export line_num;
+    export oii_order;
 
-## .opi file 
-Columns are:
+    [+:line_num]{
+        [1]<string>(name="family ID")
+        [1]<string>(name="individual ID")
+        [1]<string>(name="patertal ID")
+        [1]<string>(name="maternal ID")
+        [1]<string>(name="sex"; datatype=int; NA="0";
+                    choices={"1", "2", "0"}; id="sex")
+    }(element_end="\n"; element_sub_sep="\t"; order=oii_order)
 
-`"chromosome" "probe ID" "physical position" "gene ID" "gene orientation"`.  
+    [# Notes
+        sex: 1 for male; 2 for female; 0 for unknown.
+    ]
 
-`probe ID`: can be the ID of an exon or a transcript for RNA-seq data)
 
-## .bod file  
-Binary file of DNA methylation (or gene expression) data.
-```
-[]<>(info="bod binary data")
-[]<>(endianness="little")
-[1]<char; = {0, 1, 2}>(dsp="value type"; value="0 for DNA methylation beta value, 1 for DNA methylation m value and 2 for any other type of value")
-[1]<char; = {0, 1, 2}>(dsp="data type"; value="0 for gene expression data, 1 for DNA methylation data, and 2 for any other type of data")
-[2]<char; = 0>(dsp="reserved"; value="0")
-[1]<uint32; $indi_num>(dsp="number of individual")
-[1]<uint32; $probe_num>(dsp="number of probe")
-[$probe_num]{
-    [$indi_num]<double>(dsp="data of each")
-}()
+Opi file
+----------------
 
-```
+Storded probe information.
+
+.. code::
+
+    def filetype plaintext;
+    def encode ascii;
+    export line_num;
+    export opi_order;
+
+    [+:line_num]{
+        [1]<string>(name="chromosome ID/name")
+        [1]<string>(name="probe ID")
+        [1]<string>(name="physical position")
+        [1]<string>(name="gene ID")
+        [1]<string>(name="gene orientation")
+    }(element_end="\n"; element_sub_sep="\t"; order=opi_order)
+
+
+Bod file
+-------------------
+
+.. code::
+
+    def filetype binary;
+    def endianness little;
+    import oii_format;
+    import opi_format;
+
+    [1]<char>(name="value type"; choices={0, 1, 2}; id="value_type")
+    [1]<char>(name="data type"; choices={0, 1, 2}; id="data_type")
+    [2]<char; =0>(name="reserved bytes")
+    [1]<uint32; :indi_num>(name="number of individuals")
+    [2]<uint32; :probe_num>(name="numer of probes")
+    assert indi_num == oii_format.line_num;
+    assert probe_num == opi_format.line_num;
+    [probe_num]{
+        [indi_num]<double>(align_with=oii_format.oii_order)
+    }(align_with=opi_format.opi_order)
+
+
