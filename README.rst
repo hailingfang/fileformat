@@ -8,5 +8,5 @@ generate other strucuture rich docs.
 
 The html is hosted by: `Read the Doc`_
 
-.. _Read the Doc: https://docs-hailingfang.readthedocs.io/en/latest/
+.. _Read the Doc: https://fileformat.readthedocs.io/en/latest/
 
