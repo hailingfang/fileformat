@@ -14,7 +14,8 @@ Introduction
 File Layout Markup Language and file format wirted by this language.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
+    :numbered: 0
     :caption: Contents
     
     flml/index
