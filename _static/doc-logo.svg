@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="50mm"
+   viewBox="0 0 210 50"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="doc-logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:snap-global="false"
+     inkscape:zoom="0.69130191"
+     inkscape:cx="318.96339"
+     inkscape:cy="98.365127"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g17434"
+     inkscape:showpageshadow="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g17434"
+       transform="matrix(2.5760991,0,0,3.0582175,-115.26962,-266.52648)"
+       style="fill:#cdd9d3;fill-opacity:1">
+      <text
+         xml:space="preserve"
+         style="font-size:8.04388px;line-height:0.2;font-family:Carlito;-inkscape-font-specification:Carlito;text-align:center;letter-spacing:0.0471321px;word-spacing:0.122544px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#b3b3b3;stroke-width:0.0942643;stroke-linecap:round;stroke-linejoin:bevel;paint-order:stroke fill markers"
+         x="78.2761"
+         y="106.62652"
+         id="text2"
+         transform="scale(1.0895644,0.91779798)"><tspan
+           sodipodi:role="line"
+           id="tspan2"
+           style="font-size:8.04388px;stroke-width:0.0942643;fill:#b3b3b3"
+           x="78.299667"
+           y="106.62652">File Format</tspan></text>
+    </g>
+  </g>
+</svg>
