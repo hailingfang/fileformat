@@ -14,7 +14,7 @@ Introdution
 File Layout Markup Language (FLML) is a markup language for describing the
 layout/structure of binary or plaintext text files.
 
-It have two components: FLML sentences and FLML programming language stataments.
+It has two components: FLML sentences and FLML programming language stataments.
 
 
 FLML Sentences

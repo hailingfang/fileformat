@@ -8,5 +8,4 @@ Documents of File Layout Markup Language.
     :numbered: 0
 
     file-layout-markup-language
-    user-guide
 
