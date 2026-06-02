@@ -2,7 +2,7 @@
 File Layout Markup Language Specification
 ======================================================
 
-:Authors: Benjamin Fang
+:Authors: Hailing Fang
 :Version: 2.1.0
 :Create Date: 20230401
 :Update Date: 20260601
