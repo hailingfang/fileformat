@@ -1,81 +1,146 @@
 ======================================================
-File Layout Markup Language Specification
+File Format Description Language Specification
 ======================================================
 
 :Authors: Hailing Fang
-:Version: 2.1.0
+:Email: hailing.fang@outlook.com
+:Version: 0.3.1
 :Create Date: 20230401
-:Update Date: 20260601
+:Update Date: 20260605
 
 
 Introdution
 ======================
 
-File Layout Markup Language (FLML) is a markup language for describing the
-layout/structure of binary or plaintext text files.
+.. image:: millipede.svg
+    :scale: 60%
 
-It has two components: FLML sentences and FLML programming language stataments.
+.. raw:: html
+
+    <style>
+        img {
+            background-color: rgba(255, 255, 255, 0) !important;
+        }
+    </style>
+
+File Format Description Language (FFDL) is a language for describing the
+format/layout of binary or plaintext files.
+
+It has two components: FFDL sentences and FFDL programming language stataments.
 
 
-FLML Sentences
+FFDL Sentences
 ======================
 
-The FLML sentences are used to describe data block consists.
+The FFDL sentences are used to describe data blocks of files.
 
-A sample FLML sentence have three parts: [...], <...> and (...).
+A sample FFDL sentence have three parts: [...], <...> and (...).
 
-There is a example of a FLML sentence::
+There is an example of a FFDL sentence::
 
     [5]<int>(name="sample sentence")
 
-The '[...]' is count part of a FLML sentence, and is necessary.
+The '[...]' is count part of the FFDL sentence, and is necessary.
 
-The '<...>' is element part of a FLML sentence, and is necessary too.
+The '<...>' is element part of the FFDL sentence, and is necessary too.
 
-The '(...)' is label part of a FLML sentence, and is optional.
+The '(...)' is label part of the FFDL sentence, and is optional.
 
-A complex FLML sentence use '{...}' replace the '<...>' part. The '{...}'
-is used to holding other FLML sentences.
+A complex FFDL sentence use '{...}' instead of the '<...>' part. The '{...}'
+is used to holding the FFDL sentences.
 
 For example::
 
-    [2] {
+    [2]{
         [2]<int>
         [1]<double>
         [8]<uint8>
     }(name="comple sentence")
 
-
 The '[...]' Part
 ------------------------
 
-The '[...]' part of a FLML sentence is called count part.
+The '[...]' part of a FFDL sentence is called **count part**.
 
-Where '...' can be a expression. The value is the number of elements defined
-in '<...>' of the FLML sentence. The value must be an integer.
+Where '...' can be an expression. The value of the expression is 0 or a positive integer
+that representing the number of elements defined by '<...>' part in the FFDL sentence.
+
 
 Example::
 
     [2 + 3]<int>
 
-The '...' can be '?', '*' or '+'. '?' represent 0 or 1. '*' represent a integer
-that is greater than or equal 0. '+' represent a integer that is greater than 1.  
-
-If '...' be '?', '*' or '+', a variable marker can flollow them. A variable marker
-defined as ':variable_name'. The variable equal the acturally value of '?', '*' or '+'.
+The '...' can be an array of 0 or positive integer. It represent that a block with
+complex element.
 
 Example::
 
-    [+:int_n]<int>
+    [[1, 2, 3]]<[int, int, float]>
+    
+    #is equal to:
+    [1]{
+        [1]<int>
+        [2]<int>
+        [3]<float>
+    }
 
-In the example, means that the file have 1 or more integer, for a specific file,
-the actural number of integer is refered by variable 'int_n'.
+For sometimes, the number of elements vary, and is depended on the actural data file that
+FFDL described. To address this, the '...' can be an range write as '(a, b)' to express
+that the number of element is between a and b, where a and b are included. If 'b' is
+missed, the range of the number is a to the positive infinaty.
+
+Example::
+
+    [(5, 10)]<int>
+    [(4, )]<float>
+
+Because the count range: '(0, 1)', '(0,)' and '(1,)' is used frequently.
+There are three shortcut mark for them.
+
+Example::
+
+    [(0, 1)]<int>
+    #equals to
+    [?]<int>
+
+    [(0, )]<int>
+    #equals to
+    [*]<int>
+
+    [(1, )]<int>
+    #equals to
+    [+]<int>
+
+The '...' can be a choice for number that embraced by '{}'.
+
+Example::
+
+    [{0, 1, 3}]<int>
+
+The value of count part can be refered by a *variable*. For underterminated
+count number this may do some help for convience.
+
+Example::
+
+    [(0, ); :count_num]<int>
+
+There are some complex examples::
+
+    [[{1, 2, 3}, {4, 5, 6}, {7, 8, 9}]; :[va, vb, vc]]<[int, float, double]>
+    [[(1, 2), (4, 5), (7, 8)]; :[xa, xb, xc]]<[int, int, int]>
+
+
+.. note::
+
+    Although an array is allowd  in count, you would better to use scalar to
+    keep FFDL sentences sample and clear.
+    Use '{...}' to describe complex structures.
 
 
 The '<...>' Part
 -------------------------
 
-The '<...>' part of a FLML sentence is called element part.
+The '<...>' part of a FFDL sentence is called **element part**.
 
 The '...' is a element type. There are element types that have been defined.
 
@@ -84,7 +149,7 @@ Element Type    Byte Size    Note
 =============== ============ ===================================================
 bit             1/8          1 bit
 byte            1            8 bits       
-char            1            a signed 8 bits integer, can be ascii characters
+char            1            a signed 8 bits integer
 int8            1            same as 'char'
 uint8           1            an unsigned 8 bits integer
 short           2            signed 16 bits integer
@@ -100,92 +165,196 @@ float           4            a 32 bits float number
 float32         4            same as 'float'
 double          8            a 64 bits float number
 float64         8            same as 'double'
-string          vary         a string, note the string do not have a '\0'
+string          vary         only used for plaintext file, the string do not
+                             contain white characters by default
 =============== ============ ===================================================
 
-The value of sample element can be refered by an variable by follwing a variable
-marker in form as ':variable_name'. When refered by an variable the element type
-should end with a ';'.
+The '...' can be an array of element type.
 
 Example::
 
-    [1]<int; :v1>
-    [4]<float; :v2>
-    [4]<uint16; [0]:v3>
+    [4]<int>
+    [[2, 3, 4]]<[int, char, double]>
 
-In the example,
-the first sentence use 'v1' to refer to one int, a scalar;
-the second sentence use 'v2' to refer to a 4 float, a vector;
-the thired sentence use 'v3' to refer to the first element of 4 elements.
 
-The value or values stored in sample elements can be assert that it should be equals to
-a specific value or values.
+In element part, the values that stored in file actural can be asserted to should
+to specific values.
 
 Example::
 
-    [1]<int; =32>
-    [3]<float; =[3.14, 0.5, 2.5]>
-    [4]<uint16; []=4>
-    [4]<uint16; [0]=8>
+    [1]<int; =5>
+    [3]<float; =[1.0, 3, 4.8]>
 
-In the example,
-the first sentences indicates that the value stored in element should equals 32;
-the second indicates that the values stored should be 3.14, 0.5 and 2.5 individually;
-the third indicatess that every value of 4 that stored should equals 4;
-the fourth indicates that the first item of the 8 stored value should equals
-the second element of the 8 stored elements.
+The value that store can be asserted that should within a range. The
+number for range is write in '()', if edge value is not include, use '-'
+to represent this. '-(1, 4)-' mean 1 to 4, but 1 and 4 is not include
+in the range.
+
+Example::
+
+    [1]<int; =(5, 9)>
+    [2]<float; =[(4, 7)-, (9, 10.03)]>
+
+The value that store can be asserted should be an option of choices.
+
+Example::
+
+    [1]<int; ={1, 2}>
+    [3]<float; =[{1, 2}, {4, 5}, {5, 6}]>
+
+Can compare a specific element with a value and assert them equal.
+
+Example::
+
+    [5]<int; [2]=4>
+
+Can assert that all element in the block should equal to a specific number.
+Or a slice be equal to a specific number.
+
+Example::
+
+    [100]<int; [:]=7>
+    [1000]<int; [0:10]=2>
+
+A slice of block's element can compare with an array.
+
+Example::
+
+    [100]<int; [0:4]=[1, 2, 3, 4]>
+
+For the asserting about choices and range of a specific element or slice of element
+is same to the comparision with values.
+
+Example::
+
+    [100]<int; [:]={1,2,3}>
+    [1000]<int; [:4]={3, 4, 5}>
+    [1000]<int; [:4]=[{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10}]>
+
+    [100]<int; [:]=(10, 15)>
+    [100]<float; [:4]=(1, 4)>
+    [100]<float; [:4]=[(1, 2), (4, 5), (6, 7), -(100, )]>
+
+
+The elements can be refered by variables. If the data block has only one element,
+the variable refer to a scalar, otherwise an array.
+
+Example::
+
+    [1]<int; :a>
+    [4]<float; :b>
+
+The a slice of block can be refered by a variable.
+
+Example::
+
+    [100]<int; [:]:x>
+    [100]<int; [:10]:y>
+    [[10, 20]]<[int, float]; [[:], [:4]]:[x, y]>
+
+
+.. note::
+
+    In order to keep FFDL sample and clear, user should shoud use labels in '(...)'
+    for some long string in '<...>'.
 
 
 The '(...)' Part
 --------------------------
 
-The '(...)' part of FLML sentence is called label part.
+The '(...)' part of FFDL sentence is called **label part**.
 
-In this part, labels are added to recode or define more information.
+In this part, labels with a label name and a label value is added. The label value is
+embraced by '""'.
+The labels can record all information including that in **count part** and **element part** part.
+So user can let count part and element part empty, and record the information by
+labels.
 
-There are labels that have defined.
+Example::
 
+    [4]<int; [:]=5>
+    #equals to
+    []<>(count="4";
+         element_type="int";
+         element_value="[:]")
 
-=============== ============ ==========================================================
-Label           Value Type   Note
-=============== ============ ==========================================================
-name            string       the name of block described by current FLML sentence
-id              string       the id of the sentence, unique in a FLML file
-desc            string       the descripiton of the data block the sentence repeated
-choices         set          a set wrote as '{ele1, ele2, ...}', the element in set 
-                             is values the elements can be
-gthan           number       a number the value stored in elements great than
-gethan          number       a number the value stored in elements great equal than
-lthan           number       a number the value stored in elements less than
-lethan          number       a number the value stored in elements less equal than
-NA              vary         a value for the value that not available 
-datatype        value type   when stored value is a string, the string should can
-                             be converted to the value type, a integer or float    
-re_pattern      RegExp       a regular expression should math stored string
-end_with        string       the data block should append ending the string
-sep_with        string       elements of data block should seperated with the string
-sorted          bool         the elements' value is sorted
-order           variable     to repeated the order of elements
-align_with      variable     the order should corresspondent with the order refer
-                             by the variable
-corresspondence variable     the value stored have relation to the variable
-offset          expression   a expression in '[]', to indicate data block offset from
-                             the begaining of the described file.
-byte_len        expression   a expression in '[]' to indicate data block byte length
-element_num     expression   a expression in '[]' in indicate the element number
-use_offset      bool         the value in '[...]' is offset from begaining instead of
-                             number of elements
-use_byte_len    bool         the value in '[...]' is byte length instead of number of
-                             elements
-use_element_num bool         the value in '[...]' is number of elements, the defoult
-                             behavior
-=============== ============ ==========================================================
+Here is labels that can replace the '...' in '[...]' and '<...>'.
 
+============================ =========================== =============================================
+Label Name                   Label Value                  Example
+============================ =========================== =============================================
+count_type                   element_number,             []<>(count_type="element_number")
+                             byte_length,
+                             offer.
+                             The defaule is
+                             element_number                      
+
+count                        an expression               []<int>(count="4")
+count_range                  an range                    []<int>(count_range="(4, 10)")
+count_choices                a choices                   []<int>(count_choices="{4, 5, 6}")
+count_reference              a variable name             [1]<int>(count_reference=":var")
+
+element_type                 element_type                [1]<>(element_type="int")
+element_value                a scalar or array           [3]<int>(element_value="=[1,2,3]")
+element_value_range          an range                    [4]<int>(element_value_range="[:]=(1, 10)-")
+element_value_choices        an choices                  [4]<int>(element_value_choices="[:]=2")
+reference                    a variable                  [4]<int>(reference=":x")
+============================ =========================== =============================================
+
+Here are other labels that have been defined. The use can define there own labels.
+
+============================ =========================== =============================================
+Label Name                   Label Value                  Example
+============================ =========================== =============================================
+name                         a name for the data block   [2]<int>(name="header block")
+id                           a uinque id for a block     [32]<float>(id="magic_number")
+description
+lthan                        a number that value of      [5]<int>(lthan="[:]<12")
+                             elements should less than   
+lethan                       a number that value of      [5]<int>(lethan="[:]<=12")
+                             elements should less
+                             equal than   
+gthan                        a number that value of      [5]<int>(gthan="[:]>12")
+                             elements should greater
+                             than   
+gethan                       a number that value of      [5]<int>(gethan="[:]>=12")
+                             elements should greater
+                             equal than   
+
+encode                       if the block represent a    [*]<char>(encode="ascii")
+                             string, give the encoding
+                             schame
+string_end_marker            0                           should be 0, if present in labels
+                                                         part, the string is marked end with
+                                                         \0 
+NA                           the value for NA            [1]<string>(NA="0")
+apple                        apple a function to data    [100]<byte; :x>(apply="res=decode(x)")
+                             block                       
+============================ =========================== =============================================
+
+Some labels that may useful for a plaintext file.
+
+============================ =========================== =============================================
+Label Name                   Label Value                  Example
+============================ =========================== =============================================           
+regex_pattern                regular expression that     [1]<string>(regex_pattern="^\w") 
+                             should match the string                
+block_end_with               a block end with            [*]<char>(string_end_marker="0";
+                                                         block_end_with="\n")
+elements_separator           elements separator          
+sorted                       the elements are sorted     [10]<int>(sorted="increase")
+sorted_fun                   the function be use when    [10]<string>(sorted_fun="lambda x: int(x)")
+                             comparing
+order_reference              represent the of elements   [100]<int>(order_reference="name_order") 
+align_with                   the element in this block   [100]<string>(align_with"name_order")
+                             should align with the
+                             order. The order matters                           
+============================ =========================== =============================================
 
 The '{...}' part
 --------------------------
 
-The '{...}' part of a FLML sentence is called complex element part.
+The '{...}' part of a FFDL sentence is called **complex element part**.
 
 It is used to construct a complex element.
 
@@ -201,11 +370,22 @@ The element is make of one int, follwed by 2 char, and then 4 float.
 
 The '{...}' can be emplemented in another '{...}'.
 
+Comment FFDL Sentences
+---------------------------------
+
+If a '#' present in '[...]' part after '[', the sentence is a comment.
+
+Example::
+
+    [#4]<int>()
+
+
+
 
 Concepts and Terminology
 ----------------------------
 
-A FLML describe a data block. The data block is make of element described by
+A FFDL describe a **data block**. The data block is make of **element** described by
 '<...>' part or '{...}' part.
 
 Diagram for the block and elements of block. 
@@ -213,14 +393,18 @@ Diagram for the block and elements of block.
 .. image:: data-block-and-block-element-diagram.svg
 
 
-A '{...}' if a FLML sentence make a complex elements. The block is make 
+A '{...}' if a FFDL sentence make a **complex elements**. The block is make 
 of one or more complex elements. 
 
+The **end of blocl** is data at the end of a block.
+The **element separator** is data between elements.
+Those two concepts is useful in plaintext FFDL repretension.
 
-FLML Programming Language Stataments
+
+FFDL Programming Language Stataments
 ==========================================
 
-The FLML programming language stataments are use to do calculation and flow control.
+The FFDL programming language stataments are use to do calculation and flow control.
 It works like C and Python programming language.
 
 Variable
@@ -235,7 +419,7 @@ Data Types
 Number and String
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Integer, float and string are support in FLML programming language. A char in ''
+Integer, float and string are support in FFDL programming language. A char in ''
 is a integer same as in C. The string can be concatenated by '+' operator.
 
 Example::
@@ -249,7 +433,7 @@ Example::
 List and Dictionary
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-List and dictionary are implemented in FLML programming language.
+List and dictionary are implemented in FFDL programming language.
 It behave just like it in Python, even the attributes of the it are
 same as it in Python.
 
@@ -276,7 +460,7 @@ None              refer to nothing                a = None;
 ================= =============================== ==============================
 
 Expression
-----------------------
+-------------------------
 
 Numbers, string, functions operated by operators make an expression.
 
@@ -319,7 +503,7 @@ Operators      Name                Examples
 Bitwise Operators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FLML programming language support bitwise operatons, the behavior is just like that
+FFDL programming language support bitwise operatons, the behavior is just like that
 in C.
 
 ============== ===================== ============================================
@@ -338,7 +522,7 @@ Statament
 
 A expression with with a ';' make a statament.
 
-There are other stataments that make FLML programming language control complete.
+There are other stataments that make FFDL programming language control complete.
 
 Conditions
 ~~~~~~~~~~~~~~~~~~~~~
@@ -346,11 +530,11 @@ Conditions
 .. code::
 
     if (Expression) {
-        stataments or FLML sentences;
+        stataments or FFDL sentences;
     } elif (Expression) {
-        stataments or FLML sentences;
+        stataments or FFDL sentences;
     } else {
-        stataments or FLML sentences;
+        stataments or FFDL sentences;
     }
 
 Example::
@@ -367,6 +551,12 @@ Example::
         [num_char * 2]<char>
     }
 
+.. note::
+
+    A label part can be added to 'if' statament. For example:
+    if (1) {[10]<int>}(id="block_x").
+    Same is true for 'for', 'while' and 'goto' stataments.
+
 Loops
 ~~~~~~~~~~~~~~~~~~~
 
@@ -377,11 +567,11 @@ loop.
 .. code::
 
     for (init_Expression1; compare_Expression2; calcu_Expression3) {
-        stataments or FLML sentences;
+        stataments or FFDL sentences;
     }
 
     for (ele in ele_s) {
-        stataments or FLML sentences;
+        stataments or FFDL sentences;
     }
 
 
@@ -403,7 +593,7 @@ The 'while' statament is supported.
 .. code::
 
     while (Expression) {
-        stataments or FLML sentences;
+        stataments or FFDL sentences;
     }
 
 
@@ -433,13 +623,13 @@ In the example, the y list will have 3 elements that stored in the data block.
 goto statament
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The FLML programming language support 'goto' statament, the 'goto' should follow
+The FFDL programming language support 'goto' statament, the 'goto' should follow
 a integer for offset from described file's begaining.
 
 .. code::
 
     goto (offset) {
-        stataments or FLML sentences;
+        stataments or FFDL sentences;
     }
 
 Example::
@@ -494,7 +684,7 @@ statament        example
 ================ =============================================
 assert           assert 1 == 2;
 raise            raise "an error";
-import           import flml_modul;
+import           import FFDL_modul;
 export           export an_variable;
 require          require infor.txt;
 def              def filetype plaintext;
@@ -505,19 +695,19 @@ deflabel         def optional "the value is bool, if True
 import and export stataments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FLML programming language can import other flml file format description file as
-a module/library. The export variable will visiable in importing flml file.
+FFDL programming language can import other FFDL file format description file as
+a module/library. The export variable will visiable in importing FFDL file.
 
 Example::
 
-    #lib.flml
+    #lib.FFDL
     export x;
     export add;
 
     x = 123;
     fun add(x, y) {return x + y;}
 
-    #b.flml
+    #b.FFDL
     import lib;
 
     [lib.x]<int; :x_value>
@@ -527,17 +717,17 @@ Example::
 require stataments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Some, a flml file would like to offer a function that parse the store data into
+Some, a FFDL file would like to offer a function that parse the store data into
 a data structure. When doing this, other file make need.
 
 Example::
 
-    #in flml1.flml file 1
+    #in FFDL1.FFDL file 1
     def filename file_a
 
 
-    #in flml file 2
-    import flml1;
+    #in FFDL file 2
+    import FFDL1;
     require file_a;
 
     fin = open(file_a);
@@ -556,26 +746,18 @@ Example::
     def encode ascii;
     def filename fname_a;
 
-When the flml file is imported by other flml file, the define attributes is visiable
+When the FFDL file is imported by other FFDL file, the define attributes is visiable
 to it.
 
 deflabel stataments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If defined labels used in '(...)' not satify user's requirements. One can define
-labels, to extend meaning of FLML sentences.
+labels, to extend meaning of FFDL sentences.
 
 
-Comments
-============================
-
-A sentence whose '[...]' part start with '#', the sentence is
-regard as a comment.
-
-For example::
-
-    [# this is a comment]<int>()
-
+Comments in FFDL Programming Language
+----------------------------------------------------
 
 A line start with '#', the line is a comment.
 
