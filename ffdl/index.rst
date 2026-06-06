@@ -7,5 +7,5 @@ Documents of File Layout Markup Language.
     :maxdepth: 1
     :numbered: 0
 
-    file-layout-markup-language
+    file-format-description-language
 
