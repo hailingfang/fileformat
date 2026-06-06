@@ -288,7 +288,9 @@ count_type                   element_number,             []<>(count_type="elemen
                              offer.
                              The defaule is
                              element_number                      
-
+element_number               an expression               []<int>(element_number="12")
+byte_length                  an expression               [4]<int>(byte_length="16")
+offset                       an expression               [1]<char>(name="filetype", offset="0")
 count                        an expression               []<int>(count="4")
 count_range                  an range                    []<int>(count_range="(4, 10)")
 count_choices                a choices                   []<int>(count_choices="{4, 5, 6}")
