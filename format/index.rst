@@ -40,4 +40,5 @@ Misc
     :numbered: 0
 
     zlib-and-gzip-file
+    tar
 
