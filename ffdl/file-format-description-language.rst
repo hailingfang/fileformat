@@ -42,7 +42,7 @@ There is an example of a FFDL sentence::
 
 The '[...]' is count part of the FFDL sentence, and is necessary.
 
-The '<...>' is element part of the FFDL sentence, and is necessary too.
+The '<...>' is element part of the FFDL sentence, and is optional.
 
 The '(...)' is label part of the FFDL sentence, and is optional.
 
