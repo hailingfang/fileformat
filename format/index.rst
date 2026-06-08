@@ -11,7 +11,7 @@ Biology
 
 .. toctree::
     :maxdepth: 1
-    :numbered: 1
+    :numbered: 0
 
     plink-bed-file
     gcta-besd-file
@@ -27,9 +27,10 @@ Image
 
 .. toctree::
     :maxdepth: 1
-    :numbered: 1
+    :numbered: 0
     
     tiff
+    jpeg
 
 
 Misc
@@ -37,7 +38,7 @@ Misc
 
 .. toctree::
     :maxdepth: 1
-    :numbered: 1
+    :numbered: 0
 
     zlib-and-gzip-file
     tar
