@@ -6,11 +6,18 @@ The TIFF v6.0 format described by FLML.
 .. code::
 
     [# TIFF v6.0]
-    #Image File Header
-    [2]<char>(name="byte order"; id="byte_oder"; choices={['I','I'], ['M','M']})
-    [1]<uint16; =42>(name="magic number")
-    [1]<uint32; :offset_to_first_IFD>(id="offset_to_first_IFD")
 
+    #Image File Header
+    [2]<char; :endianess>(name="byte order"; id="byte_oder"; choices={['I','I'], ['M','M']})
+    if (endianess == ['I', 'I']) {
+        def endianess little;
+    }
+    elif (endianess == ['M', 'M']) {
+        def ednianess big;
+    }
+    [1]<uint16; =42>(name="magic number")
+
+    [1]<uint32; :offset_to_first_IFD>(id="offset_to_first_IFD")
     if (offset_to_first_IFD >= 8) {
         tag_info = {}
         goto (offset_to_first_IFD) {
